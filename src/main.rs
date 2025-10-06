@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::color::palettes::css::LIMEGREEN;
 use bevy::window::WindowResolution;
 
 const WINDOW_WIDTH: f32 = 1024.0;
@@ -8,8 +7,13 @@ const WINDOW_HEIGHT: f32 = 720.0;
 const WINDOW_BOTTOM_Y: f32 = WINDOW_HEIGHT / -2.0;
 const WINDOW_LEFT_X: f32 = WINDOW_WIDTH / -2.0;
 
+const COLOR_BACKGROUND: Color = Color::linear_rgb(0.29, 0.31, 0.41);
+const COLOR_PLATFORM: Color = Color::linear_rgb(0.13, 0.13, 0.23);
+const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
+
 fn main() {
     App::new()
+        .insert_resource(ClearColor(COLOR_BACKGROUND))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Platformer".to_string(),
@@ -28,7 +32,7 @@ fn setup(mut commands: Commands) {
 
     commands.spawn((
         Sprite {
-            color: LIMEGREEN.into(),
+            color: COLOR_PLATFORM,
             ..default()
         },
         Transform {
@@ -40,7 +44,7 @@ fn setup(mut commands: Commands) {
 
     commands.spawn((
         Sprite {
-            color: LIMEGREEN.into(),
+            color: COLOR_PLATFORM,
             ..default()
         },
         Transform {
@@ -52,7 +56,7 @@ fn setup(mut commands: Commands) {
 
     commands.spawn((
         Sprite {
-            color: LIMEGREEN.into(),
+            color: COLOR_PLATFORM,
             ..default()
         },
         Transform {
