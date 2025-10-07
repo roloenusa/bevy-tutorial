@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
+use bevy_rapier2d::render::RapierDebugRenderPlugin;
 
 const WINDOW_WIDTH: f32 = 1024.0;
 const WINDOW_HEIGHT: f32 = 720.0;
@@ -23,6 +25,8 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(200.0)) // Physics plugin
+        .add_plugins(RapierDebugRenderPlugin::default()) // Debug plugin
         .add_systems(Startup, setup)
         .run();
 }
@@ -80,4 +84,3 @@ fn setup(
         }
     ));
 }
-
