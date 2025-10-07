@@ -27,8 +27,22 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     commands.spawn(Camera2d);
+
+    commands.spawn((
+        Mesh2d(meshes.add(Circle::default())),
+        MeshMaterial2d(materials.add(ColorMaterial::from_color(COLOR_PLAYER))),
+        Transform {
+            translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 30.0, 0.0),
+            scale: Vec3::new(30.0, 30.0, 1.0),
+            ..default()
+        },
+    ));
 
     commands.spawn((
         Sprite {
@@ -66,3 +80,4 @@ fn setup(mut commands: Commands) {
         }
     ));
 }
+
