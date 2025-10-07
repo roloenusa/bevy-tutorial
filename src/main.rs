@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
+use bevy_rapier2d::prelude::{Collider, RigidBody};
 use bevy_rapier2d::render::RapierDebugRenderPlugin;
 
 const WINDOW_WIDTH: f32 = 1024.0;
@@ -54,11 +55,14 @@ fn setup(
             ..default()
         },
         Transform {
-            translation: Vec3::new(-100.0, WINDOW_BOTTOM_Y + (200.0 / 2.0), 0.0),
+            // translation: Vec3::new(-100.0, WINDOW_BOTTOM_Y + (200.0 / 2.0), 0.0),
+            translation: Vec3::new(-100.0, 0.0, 0.0),
             scale: Vec3::new(75.0, 200.0, 1.0),
             ..default()
         },
-    ));
+    ))
+    .insert(RigidBody::Dynamic)
+    .insert(Collider::cuboid(0.5, 0.5));
 
     commands.spawn((
         Sprite {
@@ -66,11 +70,14 @@ fn setup(
             ..default()
         },
         Transform {
-            translation: Vec3::new(100.0, WINDOW_BOTTOM_Y + (350.0 / 2.0), 0.0),
+            // translation: Vec3::new(100.0, WINDOW_BOTTOM_Y + (350.0 / 2.0), 0.0),
+            translation: Vec3::new(100.0, 0.0, 0.0),
             scale: Vec3::new(50.0, 350.0, 1.0),
             ..default()
         }
-    ));
+    ))
+    .insert(RigidBody::Dynamic)
+    .insert(Collider::cuboid(0.5, 0.5));
 
     commands.spawn((
         Sprite {
@@ -78,9 +85,12 @@ fn setup(
             ..default()
         },
         Transform {
-            translation: Vec3::new(350.0, WINDOW_BOTTOM_Y + (250.0 / 2.0), 0.0),
+            // translation: Vec3::new(350.0, WINDOW_BOTTOM_Y + (250.0 / 2.0), 0.0),
+            translation: Vec3::new(350.0, 0.0, 0.0),
             scale: Vec3::new(150.0, 250.0, 1.0),
             ..default()
         }
-    ));
+    ))
+    .insert(RigidBody::Dynamic)
+    .insert(Collider::cuboid(0.5, 0.5));
 }
