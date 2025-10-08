@@ -66,48 +66,36 @@ fn setup(
         },
     ));
 
-    commands.spawn((
-        Sprite {
-            color: COLOR_PLATFORM,
-            ..default()
-        },
-        Transform {
-            // translation: Vec3::new(-100.0, WINDOW_BOTTOM_Y + (200.0 / 2.0), 0.0),
-            translation: Vec3::new(-100.0, 0.0, 0.0),
-            scale: Vec3::new(75.0, 200.0, 1.0),
-            ..default()
-        },
-    ))
-    .insert(RigidBody::Dynamic)
-    .insert(Collider::cuboid(0.5, 0.5));
+    commands.spawn(PlatformBundle::new(-100.0, Vec3::new(75.0, 200.0, 1.0)));
 
-    commands.spawn((
-        Sprite {
-            color: COLOR_PLATFORM,
-            ..default()
-        },
-        Transform {
-            // translation: Vec3::new(100.0, WINDOW_BOTTOM_Y + (350.0 / 2.0), 0.0),
-            translation: Vec3::new(100.0, 0.0, 0.0),
-            scale: Vec3::new(50.0, 350.0, 1.0),
-            ..default()
-        }
-    ))
-    .insert(RigidBody::Dynamic)
-    .insert(Collider::cuboid(0.5, 0.5));
+    commands.spawn(PlatformBundle::new(100.0, Vec3::new(50.0, 350.0, 1.0)));
 
-    commands.spawn((
-        Sprite {
-            color: COLOR_PLATFORM,
-            ..default()
-        },
-        Transform {
-            // translation: Vec3::new(350.0, WINDOW_BOTTOM_Y + (250.0 / 2.0), 0.0),
-            translation: Vec3::new(350.0, 0.0, 0.0),
-            scale: Vec3::new(150.0, 250.0, 1.0),
-            ..default()
+    commands.spawn(PlatformBundle::new(350.0, Vec3::new(150.0, 250.0, 1.0)));
+}
+
+
+#[derive(Bundle)]
+struct PlatformBundle {
+    sprite: Sprite,
+    transform: Transform,
+    body: RigidBody,
+    collider: Collider,
+}
+
+impl PlatformBundle {
+    fn new(x: f32, scale: Vec3) -> Self {
+        Self {
+            sprite: Sprite {
+                color: COLOR_PLATFORM,
+                ..default()
+            },
+            transform: Transform {
+                translation: Vec3::new(x, WINDOW_BOTTOM_Y + (scale.y / 2.0), 0.0),
+                scale,
+                ..default()
+            },
+            body: RigidBody::Dynamic,
+            collider: Collider::cuboid(0.5, 0.5)
         }
-    ))
-    .insert(RigidBody::Dynamic)
-    .insert(Collider::cuboid(0.5, 0.5));
+    }
 }
