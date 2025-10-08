@@ -10,9 +10,12 @@ const WINDOW_HEIGHT: f32 = 720.0;
 const WINDOW_BOTTOM_Y: f32 = WINDOW_HEIGHT / -2.0;
 const WINDOW_LEFT_X: f32 = WINDOW_WIDTH / -2.0;
 
+const FLOOR_THICKNESS: f32 = 10.0;
+
 const COLOR_BACKGROUND: Color = Color::linear_rgb(0.29, 0.31, 0.41);
 const COLOR_PLATFORM: Color = Color::linear_rgb(0.13, 0.13, 0.23);
 const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
+const COLOR_FLOOR: Color = Color::linear_rgb(0.45, 0.55, 0.66);
 
 fn main() {
     App::new()
@@ -38,6 +41,20 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     commands.spawn(Camera2d);
+
+    commands.spawn((
+        Sprite {
+            color: COLOR_FLOOR,
+            ..default()
+        },
+        Transform {
+            translation: Vec3::new(0.0, WINDOW_BOTTOM_Y + (FLOOR_THICKNESS / 2.0), 0.0),
+            scale: Vec3::new(WINDOW_WIDTH, FLOOR_THICKNESS, 1.0),
+            ..default()
+        }
+    ))
+    .insert(RigidBody::Fixed)
+    .insert(Collider::cuboid(0.5, 0.5));
 
     commands.spawn((
         Mesh2d(meshes.add(Circle::default())),
