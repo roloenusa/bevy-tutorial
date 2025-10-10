@@ -1,7 +1,8 @@
+use bevy::math::VectorSpace;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
-use bevy_rapier2d::prelude::{Collider, RigidBody};
+use bevy_rapier2d::prelude::{Collider, KinematicCharacterController, RigidBody};
 use bevy_rapier2d::render::RapierDebugRenderPlugin;
 
 const WINDOW_WIDTH: f32 = 1024.0;
@@ -16,6 +17,8 @@ const COLOR_BACKGROUND: Color = Color::linear_rgb(0.29, 0.31, 0.41);
 const COLOR_PLATFORM: Color = Color::linear_rgb(0.13, 0.13, 0.23);
 const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
 const COLOR_FLOOR: Color = Color::linear_rgb(0.45, 0.55, 0.66);
+
+const PLAYER_VELOCITY_X: f32 = 400.0;
 
 fn main() {
     App::new()
@@ -32,6 +35,7 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(200.0)) // Physics plugin
         .add_plugins(RapierDebugRenderPlugin::default()) // Debug plugin
         .add_systems(Startup, setup)
+        .add_systems(Update, movement)
         .run();
 }
 
@@ -64,7 +68,10 @@ fn setup(
             scale: Vec3::new(30.0, 30.0, 1.0),
             ..default()
         },
-    ));
+    ))
+    .insert(RigidBody::KinematicPositionBased)
+    .insert(Collider::ball(0.5))
+    .insert(KinematicCharacterController::default());
 
     commands.spawn(PlatformBundle::new(-100.0, Vec3::new(75.0, 200.0, 1.0)));
 
@@ -98,4 +105,22 @@ impl PlatformBundle {
             collider: Collider::cuboid(0.5, 0.5)
         }
     }
+}
+
+fn movement(
+    input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+    player: Single<&mut KinematicCharacterController>,
+) {
+    let mut player = player.into_inner();
+    let mut translation = Vec2::ZERO;
+
+    if input.pressed(KeyCode::ArrowRight) {
+        translation.x = time.delta_secs() * PLAYER_VELOCITY_X;
+    }
+    if input.pressed(KeyCode::ArrowLeft) {
+        translation.x = -(time.delta_secs() * PLAYER_VELOCITY_X);
+    }
+
+    player.translation = Some(translation);
 }
