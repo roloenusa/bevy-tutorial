@@ -1,8 +1,7 @@
-use bevy::math::VectorSpace;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
-use bevy_rapier2d::prelude::{Collider, KinematicCharacterController, RigidBody};
+use bevy_rapier2d::prelude::{Collider, KinematicCharacterController, KinematicCharacterControllerOutput, RigidBody};
 use bevy_rapier2d::render::RapierDebugRenderPlugin;
 
 const WINDOW_WIDTH: f32 = 1024.0;
@@ -19,6 +18,9 @@ const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
 const COLOR_FLOOR: Color = Color::linear_rgb(0.45, 0.55, 0.66);
 
 const PLAYER_VELOCITY_X: f32 = 400.0;
+const PLAYER_VELOCITY_Y: f32 = 850.0;
+
+const MAX_JUMP_HEIGHT: f32 = 230.0;
 
 fn main() {
     App::new()
@@ -35,7 +37,7 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(200.0)) // Physics plugin
         .add_plugins(RapierDebugRenderPlugin::default()) // Debug plugin
         .add_systems(Startup, setup)
-        .add_systems(Update, movement)
+        .add_systems(Update, (jump, rise, fall, movement))
         .run();
 }
 
@@ -113,14 +115,75 @@ fn movement(
     player: Single<&mut KinematicCharacterController>,
 ) {
     let mut player = player.into_inner();
-    let mut translation = Vec2::ZERO;
+    let mut movement = 0.0;
 
     if input.pressed(KeyCode::ArrowRight) {
-        translation.x = time.delta_secs() * PLAYER_VELOCITY_X;
-    }
-    if input.pressed(KeyCode::ArrowLeft) {
-        translation.x = -(time.delta_secs() * PLAYER_VELOCITY_X);
+        movement = time.delta_secs() * PLAYER_VELOCITY_X;
     }
 
-    player.translation = Some(translation);
+    if input.pressed(KeyCode::ArrowLeft) {
+        movement = -(time.delta_secs() * PLAYER_VELOCITY_X);
+    }
+
+
+    match player.translation {
+        Some(vec) => player.translation = Some(Vec2::new(movement, vec.y)),
+        None => player.translation = Some(Vec2::new(movement, 0.0))
+    }
+}
+
+
+#[derive(Component)]
+struct Jump(f32);
+
+fn jump(
+    input: Res<ButtonInput<KeyCode>>,
+    mut commands: Commands,
+    single: Single<(Entity, &KinematicCharacterControllerOutput), (With<KinematicCharacterController>, Without<Jump>)>
+) {
+    let player = single.into_inner();
+
+    let (player, output) = player;
+
+    if input.pressed(KeyCode::ArrowUp) && output.grounded {
+        commands.entity(player).insert(Jump(0.0));
+    }
+}
+
+fn rise(
+    mut commands: Commands,
+    time: Res<Time>,
+    player: Single<(Entity, &mut KinematicCharacterController, &mut Jump)>
+) {
+    let player = player.into_inner();
+
+    let (entity, mut player, mut jump) = player;
+
+    let mut movement = time.delta_secs() * PLAYER_VELOCITY_Y;
+
+    if movement + jump.0 >= MAX_JUMP_HEIGHT {
+        movement = MAX_JUMP_HEIGHT - jump.0;
+        commands.entity(entity).remove::<Jump>();
+    }
+
+    jump.0 += movement;
+
+    match player.translation {
+        Some(vec) => player.translation = Some(Vec2::new(vec.x, movement)),
+        None => player.translation = Some(Vec2::new(0.0, movement)),
+    }
+}
+
+fn fall(
+    time: Res<Time>,
+    player: Single<&mut KinematicCharacterController, Without<Jump>>
+) {
+    let mut player = player.into_inner();
+
+    let movement = -(time.delta_secs() * PLAYER_VELOCITY_Y / 1.5);
+
+    match player.translation {
+        Some(vec) => player.translation = Some(Vec2::new(vec.x, movement)),
+        None => player.translation = Some(Vec2::new(0.0, movement)),
+    }
 }
