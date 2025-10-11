@@ -4,6 +4,8 @@ use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
 use bevy_rapier2d::prelude::{Collider, KinematicCharacterController, KinematicCharacterControllerOutput, RigidBody};
 use bevy_rapier2d::render::RapierDebugRenderPlugin;
 
+mod platforms;
+
 const WINDOW_WIDTH: f32 = 1024.0;
 const WINDOW_HEIGHT: f32 = 720.0;
 
@@ -13,7 +15,6 @@ const WINDOW_LEFT_X: f32 = WINDOW_WIDTH / -2.0;
 const FLOOR_THICKNESS: f32 = 10.0;
 
 const COLOR_BACKGROUND: Color = Color::linear_rgb(0.29, 0.31, 0.41);
-const COLOR_PLATFORM: Color = Color::linear_rgb(0.13, 0.13, 0.23);
 const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
 const COLOR_FLOOR: Color = Color::linear_rgb(0.45, 0.55, 0.66);
 
@@ -36,6 +37,7 @@ fn main() {
         }))
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(200.0)) // Physics plugin
         .add_plugins(RapierDebugRenderPlugin::default()) // Debug plugin
+        .add_plugins(platforms::PlatformsPlugin)
         .add_systems(Startup, setup)
         .add_systems(Update, (jump, rise, fall, movement))
         .run();
@@ -74,39 +76,6 @@ fn setup(
     .insert(RigidBody::KinematicPositionBased)
     .insert(Collider::ball(0.5))
     .insert(KinematicCharacterController::default());
-
-    commands.spawn(PlatformBundle::new(-100.0, Vec3::new(75.0, 200.0, 1.0)));
-
-    commands.spawn(PlatformBundle::new(100.0, Vec3::new(50.0, 350.0, 1.0)));
-
-    commands.spawn(PlatformBundle::new(350.0, Vec3::new(150.0, 250.0, 1.0)));
-}
-
-
-#[derive(Bundle)]
-struct PlatformBundle {
-    sprite: Sprite,
-    transform: Transform,
-    body: RigidBody,
-    collider: Collider,
-}
-
-impl PlatformBundle {
-    fn new(x: f32, scale: Vec3) -> Self {
-        Self {
-            sprite: Sprite {
-                color: COLOR_PLATFORM,
-                ..default()
-            },
-            transform: Transform {
-                translation: Vec3::new(x, WINDOW_BOTTOM_Y + (scale.y / 2.0), 0.0),
-                scale,
-                ..default()
-            },
-            body: RigidBody::Dynamic,
-            collider: Collider::cuboid(0.5, 0.5)
-        }
-    }
 }
 
 fn movement(
