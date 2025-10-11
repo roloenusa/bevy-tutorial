@@ -15,6 +15,9 @@ const SPRITESHEET_ROWS: u32 = 8;
 const SPRITE_TILE_WIDTH: u32 = 128;
 const SPRITE_TILE_HEIGHT: u32 = 256;
 
+const SPRITE_RENDER_WIDTH: u32 = 64;
+const SPRITE_RENDER_HEIGHT: u32 = 128;
+
 const SPRITE_IDX_STAND: usize = 28;
 
 pub struct PlayerPlugin;
@@ -52,6 +55,7 @@ fn setup(
         },
         Transform {
             translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 300.0, 0.0),
+            scale: Vec3::new(SPRITE_RENDER_WIDTH as f32 / SPRITE_TILE_WIDTH as f32, SPRITE_RENDER_HEIGHT as f32 / SPRITE_TILE_HEIGHT as f32, 1.0),
             ..default()
         }
     ))
