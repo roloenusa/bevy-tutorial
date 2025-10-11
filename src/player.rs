@@ -4,12 +4,18 @@ use bevy_rapier2d::prelude::*;
 use crate::WINDOW_BOTTOM_Y;
 use crate::WINDOW_LEFT_X;
 
-const COLOR_PLAYER: Color = Color::linear_rgb(0.60, 0.55, 0.60);
-
 const PLAYER_VELOCITY_X: f32 = 400.0;
 const PLAYER_VELOCITY_Y: f32 = 850.0;
 
 const MAX_JUMP_HEIGHT: f32 = 230.0;
+
+const SPRITESHEET_COLS: u32 = 7;
+const SPRITESHEET_ROWS: u32 = 8;
+
+const SPRITE_TILE_WIDTH: u32 = 128;
+const SPRITE_TILE_HEIGHT: u32 = 256;
+
+const SPRITE_IDX_STAND: usize = 28;
 
 pub struct PlayerPlugin;
 
@@ -22,17 +28,32 @@ impl Plugin for PlayerPlugin {
 
 fn setup(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    server: Res<AssetServer>,
 ) {
+    let texture: Handle<Image> = server.load("spritesheets/spritesheet_players.png");
+    let layout = TextureAtlasLayout::from_grid(
+        UVec2::new(SPRITE_TILE_WIDTH, SPRITE_TILE_HEIGHT),
+        SPRITESHEET_COLS,
+        SPRITESHEET_ROWS,
+        None,
+        None
+    );
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+
     commands.spawn((
-        Mesh2d(meshes.add(Circle::default())),
-        MeshMaterial2d(materials.add(ColorMaterial::from_color(COLOR_PLAYER))),
-        Transform {
-            translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 30.0, 0.0),
-            scale: Vec3::new(30.0, 30.0, 1.0),
+        Sprite {
+            image: texture.clone(),
+            texture_atlas: Some(TextureAtlas {
+                layout: texture_atlas_layout.clone(),
+                index: SPRITE_IDX_STAND
+            }),
             ..default()
         },
+        Transform {
+            translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 30.0, 0.0),
+            ..default()
+        }
     ))
     .insert(RigidBody::KinematicPositionBased)
     .insert(Collider::ball(0.5))

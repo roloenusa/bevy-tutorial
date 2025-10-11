@@ -15,7 +15,7 @@ const WINDOW_LEFT_X: f32 = WINDOW_WIDTH / -2.0;
 
 const FLOOR_THICKNESS: f32 = 10.0;
 
-const COLOR_BACKGROUND: Color = Color::linear_rgb(0.29, 0.31, 0.41);
+const COLOR_BACKGROUND: Color = Color::linear_rgb(0.13, 0.13, 0.23);
 const COLOR_FLOOR: Color = Color::linear_rgb(0.45, 0.55, 0.66);
 
 fn main() {
