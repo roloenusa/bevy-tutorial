@@ -51,12 +51,12 @@ fn setup(
             ..default()
         },
         Transform {
-            translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 30.0, 0.0),
+            translation: Vec3::new(WINDOW_LEFT_X + 100.0, WINDOW_BOTTOM_Y + 300.0, 0.0),
             ..default()
         }
     ))
     .insert(RigidBody::KinematicPositionBased)
-    .insert(Collider::ball(0.5))
+    .insert(Collider::cuboid((SPRITE_TILE_WIDTH / 2) as f32, (SPRITE_TILE_HEIGHT / 2) as f32))
     .insert(KinematicCharacterController::default());
 }
 
